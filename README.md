@@ -12,6 +12,12 @@ Compose Material3, targets Android 15+ (minSdk 35, targetSdk 36) and uses the pa
 `io.github.unclejs.batterywidget`. The APK is built entirely inside rootless Podman containers
 managed with Quadlet, so nothing is installed on the host.
 
+---
+
+![Battery widget on the home screen](image.png)
+
+---
+
 ## Table of Contents
 
 - [Features](#features)
