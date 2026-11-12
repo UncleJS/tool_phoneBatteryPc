@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Copyright (C) 2026 UncleJS
+#
+# Generates: phonebattery-dist-volume.service
+
+[Unit]
+Description=phonebattery: APK build output (/out) volume
+
+[Volume]
+VolumeName=phonebattery-dist
+Label=io.github.unclejs.project=phonebattery

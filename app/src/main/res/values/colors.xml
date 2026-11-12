@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  SPDX-License-Identifier: AGPL-3.0-or-later
+  Copyright (C) 2026 UncleJS
+-->
+<resources>
+    <color name="window_background_dark">#FF121212</color>
+    <color name="accent">#FF7DDB8C</color>
+    <color name="ic_launcher_background">#FF1E2A22</color>
+    <color name="widget_preview_background">#FF121212</color>
+    <color name="widget_preview_text">#FFF2F2F2</color>
+    <color name="widget_preview_secondary_text">#FFB8B8B8</color>
+</resources>

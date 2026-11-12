@@ -1,0 +1,24 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Copyright (C) 2026 UncleJS
+#
+# One-shot job: runs unit tests and builds the debug APK into the
+# phonebattery-dist volume. Started on demand by scripts/start.sh; it has no
+# [Install] section, so it never starts automatically.
+# Generates: phonebattery-apk.service
+
+[Unit]
+Description=phonebattery: build the debug APK (unit tests + assembleDebug)
+
+[Container]
+Image=phonebattery-builder.build
+ContainerName=phonebattery-apk
+Label=io.github.unclejs.project=phonebattery
+Volume=phonebattery-gradle.volume:/root/.gradle
+Volume=phonebattery-keystore.volume:/root/.android
+Volume=phonebattery-dist.volume:/out
+Exec=/usr/local/bin/build-apk.sh
+
+[Service]
+Type=oneshot
+RemainAfterExit=no
+TimeoutStartSec=1800

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  SPDX-License-Identifier: AGPL-3.0-or-later
+  Copyright (C) 2026 UncleJS
+-->
+<resources>
+    <string name="app_name">Battery Widget</string>
+    <string name="widget_description">Battery level, charging state, temperature and last update time. Tap to refresh.</string>
+    <string name="preview_percent" formatted="false" translatable="false">87%</string>
+    <string name="preview_charging" translatable="false">⚡ Charging (USB)</string>
+    <string name="preview_temperature" translatable="false">31.2 °C</string>
+    <string name="preview_time" translatable="false">2026-11-08 14:05:09</string>
+</resources>

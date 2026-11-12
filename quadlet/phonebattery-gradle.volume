@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Copyright (C) 2026 UncleJS
+#
+# Generates: phonebattery-gradle-volume.service
+
+[Unit]
+Description=phonebattery: Gradle user home cache (/root/.gradle) volume
+
+[Volume]
+VolumeName=phonebattery-gradle
+Label=io.github.unclejs.project=phonebattery

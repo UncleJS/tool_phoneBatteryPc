@@ -1,0 +1,24 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Copyright (C) 2026 UncleJS
+#
+# Template: scripts/install.sh replaces the repo-path placeholder in File= and
+# SetWorkingDirectory= with the absolute repo path when it copies this file to
+# ~/.config/containers/systemd/.
+# Generates: phonebattery-builder-build.service
+#
+# RemainAfterExit=no: the build re-runs (using the layer cache) every time
+# phonebattery-apk.service starts, so source changes are always picked up.
+
+[Unit]
+Description=phonebattery: build the Android builder image (localhost/phonebattery-builder:latest)
+
+[Build]
+ImageTag=localhost/phonebattery-builder:latest
+File=@REPO_DIR@/Containerfile
+SetWorkingDirectory=@REPO_DIR@
+Label=io.github.unclejs.project=phonebattery
+Pull=missing
+
+[Service]
+RemainAfterExit=no
+TimeoutStartSec=1800
