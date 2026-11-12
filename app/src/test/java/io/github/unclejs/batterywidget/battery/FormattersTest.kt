@@ -88,6 +88,35 @@ class FormattersTest {
     }
 
     @Test
+    fun durationFormatting() {
+        assertEquals("< 1 min", formatDuration(59_000L))
+        assertEquals("1 min", formatDuration(60_000L))
+        assertEquals("59 min", formatDuration(3_599_000L))
+        assertEquals("1 h", formatDuration(3_600_000L))
+        assertEquals("1 h 23 min", formatDuration(5_000_000L))
+        assertEquals("< 1 min", formatDuration(-5L))
+    }
+
+    @Test
+    fun timeToFullLabels() {
+        val charging = BatterySnapshot(
+            levelPct = 50, isCharging = true, isFull = false, plugType = PlugType.AC,
+            tempC = null, readAtEpochMs = 0L, chargeSpeed = ChargeSpeed.FAST,
+        )
+        assertNull(timeToFullLabel(charging))
+        assertEquals("Full in 1 h 23 min", timeToFullLabel(charging.copy(timeToFullMs = 5_000_000L)))
+        assertEquals(
+            "Full in ~30 min",
+            timeToFullLabel(charging.copy(timeToFullMs = 1_800_000L, timeToFullEstimated = true)),
+        )
+        val unplugged = charging.copy(
+            isCharging = false, plugType = PlugType.NONE, chargeSpeed = ChargeSpeed.NOT_CHARGING,
+            timeToFullMs = 1_800_000L,
+        )
+        assertNull(timeToFullLabel(unplugged))
+    }
+
+    @Test
     fun clampPctSizeRange() {
         assertEquals(12, clampPctSize(0))
         assertEquals(12, clampPctSize(12))

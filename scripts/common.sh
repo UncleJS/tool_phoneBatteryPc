@@ -53,7 +53,7 @@ UNIT_FILES=(
 REPO_DIR_PLACEHOLDER="@REPO_DIR@"
 
 DIST_DIR="${REPO_ROOT}/dist"
-APK_NAME="battery-widget-debug.apk"
+APK_NAME="BatteryLevelApp.apk"
 
 # --- Helpers -----------------------------------------------------------------
 # Timestamps are UTC, formatted yyyy-MM-dd HH:mm:ss.

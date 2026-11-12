@@ -36,6 +36,7 @@ object WidgetUpdater {
         val SHOW_TEMP = booleanPreferencesKey("showTemp")
         val SHOW_TIME = booleanPreferencesKey("showTime")
         val SHOW_REFRESH = booleanPreferencesKey("showRefresh")
+        val SHOW_TIME_TO_FULL = booleanPreferencesKey("showTimeToFull")
 
         val LEVEL = intPreferencesKey("level")
         val CHARGING = booleanPreferencesKey("charging")
@@ -45,6 +46,8 @@ object WidgetUpdater {
         val READ_AT = longPreferencesKey("readAtMs")
         val SPEED = stringPreferencesKey("chargeSpeed")
         val POWER_MW = intPreferencesKey("powerMw")
+        val TIME_TO_FULL_MS = longPreferencesKey("timeToFullMs")
+        val TIME_TO_FULL_EST = booleanPreferencesKey("timeToFullEstimated")
 
         /** Copy of the app theme so the widget can render without reading app settings. */
         val DARK = booleanPreferencesKey("darkTheme")
@@ -90,6 +93,7 @@ object WidgetUpdater {
                 prefs[Keys.SHOW_TEMP] = safe.showTemp
                 prefs[Keys.SHOW_TIME] = safe.showTime
                 prefs[Keys.SHOW_REFRESH] = safe.showRefreshButton
+                prefs[Keys.SHOW_TIME_TO_FULL] = safe.showTimeToFull
                 if (snapshot != null) writeSnapshot(prefs, snapshot)
                 prefs[Keys.DARK] = dark
             }
@@ -112,6 +116,7 @@ object WidgetUpdater {
             showTemp = prefs[Keys.SHOW_TEMP] ?: defaults.showTemp,
             showTime = prefs[Keys.SHOW_TIME] ?: defaults.showTime,
             showRefreshButton = prefs[Keys.SHOW_REFRESH] ?: defaults.showRefreshButton,
+            showTimeToFull = prefs[Keys.SHOW_TIME_TO_FULL] ?: defaults.showTimeToFull,
         ).clamped()
     }
 
@@ -126,6 +131,8 @@ object WidgetUpdater {
             tempC = prefs[Keys.TEMP_TENTHS]?.let { it / 10f },
             readAtEpochMs = prefs[Keys.READ_AT] ?: 0L,
             powerMw = prefs[Keys.POWER_MW],
+            timeToFullMs = prefs[Keys.TIME_TO_FULL_MS],
+            timeToFullEstimated = prefs[Keys.TIME_TO_FULL_EST] ?: false,
         )
         // Older state has no speed: keep the default derived from charging/full.
         val speed = ChargeSpeed.fromName(prefs[Keys.SPEED]) ?: return base
@@ -147,5 +154,8 @@ object WidgetUpdater {
         prefs[Keys.SPEED] = s.chargeSpeed.name
         val power = s.powerMw
         if (power != null) prefs[Keys.POWER_MW] = power else prefs.remove(Keys.POWER_MW)
+        val ttf = s.timeToFullMs
+        if (ttf != null) prefs[Keys.TIME_TO_FULL_MS] = ttf else prefs.remove(Keys.TIME_TO_FULL_MS)
+        prefs[Keys.TIME_TO_FULL_EST] = s.timeToFullEstimated
     }
 }

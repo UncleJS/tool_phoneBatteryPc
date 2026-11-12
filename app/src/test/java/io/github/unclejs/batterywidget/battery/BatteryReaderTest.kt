@@ -99,6 +99,37 @@ class BatteryReaderTest {
     }
 
     @Test
+    fun timeToFullPrefersPlatformThenEstimate() {
+        val charging = BatteryReader.STATUS_CHARGING
+        val platform = BatteryReader.parse(
+            50, 100, charging, BatteryReader.PLUGGED_AC, 250, 0L,
+            currentNowUa = 1_000_000, chargeTimeRemainingMs = 1_800_000L, chargeCounterUah = 2_000_000,
+        )
+        assertEquals(1_800_000L, platform.timeToFullMs)
+        assertFalse(platform.timeToFullEstimated)
+
+        val estimate = BatteryReader.parse(
+            50, 100, charging, BatteryReader.PLUGGED_AC, 250, 0L,
+            currentNowUa = 1_000_000, chargeCounterUah = 2_000_000,
+        )
+        assertEquals(7_200_000L, estimate.timeToFullMs)
+        assertTrue(estimate.timeToFullEstimated)
+
+        val unknown = BatteryReader.parse(50, 100, charging, BatteryReader.PLUGGED_AC, 250, 0L)
+        assertNull(unknown.timeToFullMs)
+        assertFalse(unknown.timeToFullEstimated)
+    }
+
+    @Test
+    fun noTimeToFullWhenNotCharging() {
+        val s = BatteryReader.parse(
+            50, 100, BatteryReader.STATUS_DISCHARGING, 0, 250, 0L,
+            currentNowUa = 1_000_000, chargeTimeRemainingMs = 1_800_000L, chargeCounterUah = 2_000_000,
+        )
+        assertNull(s.timeToFullMs)
+    }
+
+    @Test
     fun plugTypeFromName() {
         assertEquals(PlugType.WIRELESS, PlugType.fromName("WIRELESS"))
         assertEquals(PlugType.NONE, PlugType.fromName(null))

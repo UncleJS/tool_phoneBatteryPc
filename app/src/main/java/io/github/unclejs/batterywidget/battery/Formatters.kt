@@ -52,6 +52,27 @@ fun chargingDetail(snapshot: BatterySnapshot): String? {
 fun formatPower(powerMw: Int): String =
     String.format(Locale.ROOT, "%.1f W", powerMw / 1000f)
 
+/** `1 h 23 min`, `23 min`, `< 1 min` (rounded down to whole minutes). */
+fun formatDuration(ms: Long): String {
+    val totalMin = ms.coerceAtLeast(0L) / 60_000L
+    val h = totalMin / 60
+    val m = totalMin % 60
+    return when {
+        totalMin < 1 -> "< 1 min"
+        h == 0L -> "$m min"
+        m == 0L -> "$h h"
+        else -> "$h h $m min"
+    }
+}
+
+/** `Full in 1 h 23 min` (`~` marks the app's own estimate); null when not charging or unknown. */
+fun timeToFullLabel(snapshot: BatterySnapshot): String? {
+    val ms = snapshot.timeToFullMs ?: return null
+    if (!snapshot.chargeSpeed.isCharging) return null
+    val prefix = if (snapshot.timeToFullEstimated) "~" else ""
+    return "Full in $prefix${formatDuration(ms)}"
+}
+
 fun clampPctSize(sp: Int): Int = sp.coerceIn(SizeLimits.PCT_MIN, SizeLimits.PCT_MAX)
 
 fun clampDetailSize(sp: Int): Int = sp.coerceIn(SizeLimits.DETAIL_MIN, SizeLimits.DETAIL_MAX)

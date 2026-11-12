@@ -58,6 +58,7 @@ import androidx.compose.ui.unit.sp
 import io.github.unclejs.batterywidget.battery.ChargeSpeed
 import io.github.unclejs.batterywidget.battery.ChargeSpeedRules
 import io.github.unclejs.batterywidget.battery.chargingDetail
+import io.github.unclejs.batterywidget.battery.timeToFullLabel
 import io.github.unclejs.batterywidget.battery.chargingLabel
 import io.github.unclejs.batterywidget.widget.WidgetPalette
 import io.github.unclejs.batterywidget.widget.WidgetUpdater
@@ -203,6 +204,9 @@ private fun MainScreen(dark: Boolean) {
                         val chargeColor = palette.chargeColor(s.chargeSpeed)
                         Text(chargingLabel(s), style = MaterialTheme.typography.bodyLarge, color = chargeColor)
                         chargingDetail(s)?.let {
+                            Text(it, style = MaterialTheme.typography.bodyLarge, color = chargeColor)
+                        }
+                        timeToFullLabel(s)?.let {
                             Text(it, style = MaterialTheme.typography.bodyLarge, color = chargeColor)
                         }
                         s.tempC?.let { Text(formatTemperature(it), style = MaterialTheme.typography.bodyLarge) }

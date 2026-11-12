@@ -57,17 +57,29 @@ object BatteryReader {
             voltageMv = intent.getIntExtra(BatteryManager.EXTRA_VOLTAGE, -1),
             maxChargingCurrentUa = intent.getIntExtra(EXTRA_MAX_CHARGING_CURRENT, -1),
             maxChargingVoltageUv = intent.getIntExtra(EXTRA_MAX_CHARGING_VOLTAGE, -1),
-            currentNowUa = currentNowUa(context),
+            currentNowUa = intProperty(context, BatteryManager.BATTERY_PROPERTY_CURRENT_NOW),
+            chargeTimeRemainingMs = chargeTimeRemainingMs(context),
+            chargeCounterUah = intProperty(context, BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER),
         )
 
-    /** BATTERY_PROPERTY_CURRENT_NOW in µA, or Int.MIN_VALUE if unsupported. */
-    private fun currentNowUa(context: Context): Int =
+    /** A BatteryManager int property (µA / µAh), or Int.MIN_VALUE if unsupported. */
+    private fun intProperty(context: Context, id: Int): Int =
         try {
             context.getSystemService(BatteryManager::class.java)
-                ?.getIntProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_NOW)
+                ?.getIntProperty(id)
                 ?: Int.MIN_VALUE
         } catch (e: RuntimeException) {
             Int.MIN_VALUE
+        }
+
+    /** Android's own time-until-full estimate in ms, or -1 if unknown. */
+    private fun chargeTimeRemainingMs(context: Context): Long =
+        try {
+            context.getSystemService(BatteryManager::class.java)
+                ?.computeChargeTimeRemaining()
+                ?: -1L
+        } catch (e: RuntimeException) {
+            -1L
         }
 
     /**
@@ -88,6 +100,8 @@ object BatteryReader {
         maxChargingCurrentUa: Int = -1,
         maxChargingVoltageUv: Int = -1,
         currentNowUa: Int = Int.MIN_VALUE,
+        chargeTimeRemainingMs: Long = -1L,
+        chargeCounterUah: Int = Int.MIN_VALUE,
     ): BatterySnapshot {
         val safeScale = if (scale > 0) scale else 100
         val pct = if (level < 0) 0 else (level * 100f / safeScale).roundToInt().coerceIn(0, 100)
@@ -95,6 +109,14 @@ object BatteryReader {
         val charging = status == STATUS_CHARGING
         val rated = ChargeSpeedRules.ratedPowerMw(maxChargingCurrentUa, maxChargingVoltageUv)
         val measured = ChargeSpeedRules.measuredPowerMw(currentNowUa, voltageMv)
+        val speed = ChargeSpeedRules.classify(status, plugType, rated, measured)
+        // Prefer Android's estimate; fall back to a rough one from charge counter and current.
+        val platformTime = if (speed.isCharging) ChargeTimeRules.fromPlatform(chargeTimeRemainingMs) else null
+        val estimatedTime = if (speed.isCharging && platformTime == null) {
+            ChargeTimeRules.estimateMs(chargeCounterUah, pct, currentNowUa)
+        } else {
+            null
+        }
         return BatterySnapshot(
             levelPct = pct,
             isCharging = charging,
@@ -102,9 +124,11 @@ object BatteryReader {
             plugType = plugType,
             tempC = if (tempTenths == TEMP_MISSING) null else tempTenths / 10f,
             readAtEpochMs = nowMs,
-            chargeSpeed = ChargeSpeedRules.classify(status, plugType, rated, measured),
+            chargeSpeed = speed,
             // Show what actually flows in; fall back to the charger rating.
             powerMw = if (charging) measured ?: rated else null,
+            timeToFullMs = platformTime ?: estimatedTime,
+            timeToFullEstimated = platformTime == null && estimatedTime != null,
         )
     }
 

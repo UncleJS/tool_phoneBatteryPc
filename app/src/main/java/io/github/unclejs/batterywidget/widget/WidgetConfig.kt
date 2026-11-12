@@ -15,6 +15,7 @@ data class WidgetConfig(
     val showTemp: Boolean = true,
     val showTime: Boolean = true,
     val showRefreshButton: Boolean = true,
+    val showTimeToFull: Boolean = true,
 ) {
     fun clamped(): WidgetConfig = copy(
         pctSizeSp = clampPctSize(pctSizeSp),

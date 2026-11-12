@@ -55,6 +55,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.unclejs.batterywidget.battery.BatterySnapshot
 import io.github.unclejs.batterywidget.battery.SizeLimits
 import io.github.unclejs.batterywidget.battery.chargingDetail
+import io.github.unclejs.batterywidget.battery.timeToFullLabel
 import io.github.unclejs.batterywidget.battery.chargingLabel
 import io.github.unclejs.batterywidget.battery.clampDetailSize
 import io.github.unclejs.batterywidget.battery.clampPctSize
@@ -143,6 +144,7 @@ private fun ConfigScreen(
     var showTemp by rememberSaveable { mutableStateOf(true) }
     var showTime by rememberSaveable { mutableStateOf(true) }
     var showRefresh by rememberSaveable { mutableStateOf(true) }
+    var showTimeToFull by rememberSaveable { mutableStateOf(true) }
     var saving by remember { mutableStateOf(false) }
 
     LaunchedEffect(glanceId) {
@@ -154,6 +156,7 @@ private fun ConfigScreen(
             showTemp = stored.showTemp
             showTime = stored.showTime
             showRefresh = stored.showRefreshButton
+            showTimeToFull = stored.showTimeToFull
             loaded = true
         }
     }
@@ -165,6 +168,7 @@ private fun ConfigScreen(
         showTemp = showTemp,
         showTime = showTime,
         showRefreshButton = showRefresh,
+        showTimeToFull = showTimeToFull,
     )
 
     Scaffold(
@@ -249,6 +253,7 @@ private fun ConfigScreen(
             )
 
             SwitchRow("Show charging", showCharging) { showCharging = it }
+            SwitchRow("Show time until full", showTimeToFull) { showTimeToFull = it }
             SwitchRow("Show temperature", showTemp) { showTemp = it }
             SwitchRow("Show last update", showTime) { showTime = it }
             SwitchRow("Show refresh button", showRefresh) { showRefresh = it }
@@ -292,6 +297,15 @@ private fun WidgetPreview(snapshot: BatterySnapshot?, config: WidgetConfig, pale
                     if (config.showCharging) {
                         add(chargingLabel(snapshot) to chargeColor)
                         chargingDetail(snapshot)?.let { add(it to chargeColor) }
+                        if (config.showTimeToFull) {
+                            val ttf = timeToFullLabel(snapshot)
+                            if (ttf != null) {
+                                add(ttf to chargeColor)
+                            } else if (!snapshot.chargeSpeed.isCharging) {
+                                // Sample so the line is visible in the preview when not charging.
+                                add("Full in 1 h 5 min (while charging)" to palette.secondaryText)
+                            }
+                        }
                     }
                     val temp = snapshot.tempC
                     if (config.showTemp && temp != null) add(formatTemperature(temp) to palette.secondaryText)

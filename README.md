@@ -50,6 +50,11 @@ managed with Quadlet, so nothing is installed on the host.
   screen uses for "Charging rapidly") and the power the battery is actually drawing (current ×
   voltage). Using the higher one keeps a fast charger "fast" near 100 %, when the actual draw drops.
   The watts shown are the actual draw. The app's main screen has the same colour legend.
+- **Time until full** while charging, e.g. `Full in 1 h 23 min`, in the charging colour. It uses
+  Android's own estimate (the one the lock screen shows). If the phone doesn't provide one, the app
+  estimates it from the charge counter and current and marks it with `~` (`Full in ~45 min`); that
+  estimate tends to be optimistic because charging slows near 100 %. The figure is worked out when
+  the widget updates, so between updates it can be up to 15 minutes old (less with Live updates).
 - **Refresh button** (↻) in the widget's top-right corner (can be hidden per widget) and in the
   app's top bar. Both re-read the battery and update all widgets immediately.
 - **Battery temperature** in °C.
@@ -58,7 +63,7 @@ managed with Quadlet, so nothing is installed on the host.
   long-press → reconfigure (Android 12+):
   - percentage text size slider, 12–120 sp (default 48); if the widget is too small for the chosen size, the number shrinks to fit (resize the widget to get the full size)
   - detail text size slider, 8–32 sp (default 12)
-  - toggles to show or hide charging state, temperature, last update time and the refresh button
+  - toggles to show or hide charging state, time until full, temperature, last update time and the refresh button
   - live preview of the widget while you adjust it
 - **Multiple widgets**: each widget keeps its own settings.
 - **Dark theme by default**, with a light/dark toggle in the app's top bar.
@@ -99,7 +104,7 @@ scripts/install.sh   # check prerequisites, build the builder image, install Qua
 scripts/start.sh     # build the APK in a container and export it
 ```
 
-The APK ends up at `dist/battery-widget-debug.apk`.
+The APK ends up at `dist/BatteryLevelApp.apk`.
 
 After changing the code, rebuild the image and the APK with:
 
@@ -151,7 +156,7 @@ journalctl --user -u phonebattery-apk.service
 
 ## Install on your phone
 
-1. Copy `dist/battery-widget-debug.apk` to the phone (USB file transfer, cloud storage, etc.).
+1. Copy `dist/BatteryLevelApp.apk` to the phone (USB file transfer, cloud storage, etc.).
 2. Allow **Install unknown apps** for the file manager or app you will open the APK with.
 3. Open the APK on the phone and confirm the installation.
 4. The first time you turn on **Live updates**, Android asks for permission to show
@@ -212,6 +217,7 @@ non-zero if something remains.
 │   │   ├── BatteryReader.kt        # reads level, charging state, source, temperature, power
 │   │   ├── BatterySnapshot.kt      # reading + ChargeSpeed tiers
 │   │   ├── ChargeSpeed.kt          # charging-speed classification (watts → tier)
+│   │   ├── ChargeTime.kt           # time-until-full rules and fallback estimate
 │   │   └── Formatters.kt           # text formatting (%, °C, yyyy-MM-dd HH:mm:ss)
 │   ├── widget/
 │   │   ├── BatteryWidget.kt        # Glance widget UI

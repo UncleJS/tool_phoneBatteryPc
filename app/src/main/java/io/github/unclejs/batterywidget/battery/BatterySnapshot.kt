@@ -67,4 +67,8 @@ data class BatterySnapshot(
     },
     /** Power currently flowing into the battery in milliwatts, or null if unknown. */
     val powerMw: Int? = null,
+    /** Time until full in milliseconds while charging, or null if unknown / not charging. */
+    val timeToFullMs: Long? = null,
+    /** True when [timeToFullMs] is the app's own rough estimate rather than Android's. */
+    val timeToFullEstimated: Boolean = false,
 )

@@ -22,6 +22,7 @@ import io.github.unclejs.batterywidget.R
 import io.github.unclejs.batterywidget.battery.BatteryReader
 import io.github.unclejs.batterywidget.battery.BatterySnapshot
 import io.github.unclejs.batterywidget.battery.chargingDetail
+import io.github.unclejs.batterywidget.battery.timeToFullLabel
 import io.github.unclejs.batterywidget.battery.chargingLabel
 import io.github.unclejs.batterywidget.battery.formatPercent
 import io.github.unclejs.batterywidget.battery.formatTemperature
@@ -108,7 +109,7 @@ class LiveBatteryService : Service() {
         )
         val title = if (snapshot != null) "Battery ${formatPercent(snapshot.levelPct)}" else "Battery"
         val text = snapshot?.let { s ->
-            listOfNotNull(chargingLabel(s), chargingDetail(s), s.tempC?.let { formatTemperature(it) }).joinToString(" · ")
+            listOfNotNull(chargingLabel(s), chargingDetail(s), timeToFullLabel(s), s.tempC?.let { formatTemperature(it) }).joinToString(" · ")
         } ?: "Keeping the widget up to date"
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_battery)

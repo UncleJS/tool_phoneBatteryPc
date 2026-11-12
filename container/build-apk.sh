@@ -8,7 +8,7 @@ set -euo pipefail
 
 SRC_DIR="${SRC_DIR:-/src}"
 OUT_DIR="${OUT_DIR:-/out}"
-APK_NAME="${APK_NAME:-battery-widget-debug.apk}"
+APK_NAME="${APK_NAME:-BatteryLevelApp.apk}"
 BUILD_TOOLS_VERSION="${BUILD_TOOLS_VERSION:-36.0.0}"
 BUILD_TOOLS_DIR="${ANDROID_HOME:-/opt/android-sdk}/build-tools/${BUILD_TOOLS_VERSION}"
 

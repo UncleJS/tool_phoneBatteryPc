@@ -18,6 +18,7 @@ import androidx.glance.layout.Box
 import androidx.glance.layout.size
 import io.github.unclejs.batterywidget.R
 import io.github.unclejs.batterywidget.battery.chargingDetail
+import io.github.unclejs.batterywidget.battery.timeToFullLabel
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.SizeMode
@@ -149,6 +150,11 @@ private fun WidgetLines(
                 Text(text = chargingLabel(snapshot), style = chargeStyle, maxLines = 1)
                 chargingDetail(snapshot)?.let { detail ->
                     Text(text = detail, style = chargeStyle, maxLines = 1)
+                }
+                if (config.showTimeToFull) {
+                    timeToFullLabel(snapshot)?.let { ttf ->
+                        Text(text = ttf, style = chargeStyle, maxLines = 1)
+                    }
                 }
             }
             val temp = snapshot.tempC
